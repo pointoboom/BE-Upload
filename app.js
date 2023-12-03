@@ -2,6 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import multer from "multer";
+import { protect } from "./middlewares/protect.js"
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, "uploads/");
@@ -18,7 +19,7 @@ async function init() {
     app.use(cors());
     app.use(bodyParser.json());
 
-    app.post("/", multerUpload.any(), (req, res) => {
+    app.post("/", [protect, multerUpload.any()], (req, res) => {
         if (req.files.length === 0) {
             return res.status(422).json({
                 error: "Please select a file",
